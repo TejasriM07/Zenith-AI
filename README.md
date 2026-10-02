@@ -5,8 +5,19 @@ Zenith AI is an enterprise-grade, AI-driven support ticketing platform engineere
 ---
 
 ## 📸 Website Preview
-> *Below is a preview of the Zenith AI Support Command Center and Manager Analytics Portal:*
-![Zenith AI Dashboard Preview](src/main/resources/static/images/dashboard-preview.png)
+> *Explore the key interfaces of the Zenith AI Support Platform:*
+
+### 1. Landing Page
+![Landing Page](src/main/resources/static/images/LandingPage.png)
+
+### 2. Agent Command Center & Analytics Dashboard
+![Dashboard Preview](src/main/resources/static/images/dashboard-preview.png)
+
+### 3. Customer Complaint Submission Portal
+![Complaint Post Page](src/main/resources/static/images/complaintPostPage.png)
+
+### 4. Manager Oversight & Employee Performance Portal
+![Manager Oversight](src/main/resources/static/images/Manager-oversite.png)
 
 ---
 
