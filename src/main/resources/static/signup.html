@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenith AI | Sign Up</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f3e7ff 0%, #e5d9f2 50%, #d7c1f9 100%);
+            color: #2b2d42;
+            min-height: 100vh;
+        }
+        .clay-card {
+            background: #ffffff;
+            border-radius: 35px;
+            box-shadow: 20px 20px 50px rgba(163, 140, 195, 0.4), 
+                        inset -10px -10px 20px rgba(163, 140, 195, 0.15), 
+                        inset 10px 10px 20px rgba(255, 255, 255, 0.9);
+        }
+        .clay-input {
+            background: #f8fafc;
+            border-radius: 20px;
+            border: none;
+            box-shadow: inset 6px 6px 12px rgba(163, 140, 195, 0.2), 
+                        inset -6px -6px 12px rgba(255, 255, 255, 0.9);
+            outline: none;
+        }
+        .clay-button-primary {
+            background: #7c3aed;
+            color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 10px 10px 25px rgba(124, 58, 237, 0.4), 
+                        inset -5px -5px 10px rgba(91, 33, 182, 0.5), 
+                        inset 5px 5px 10px rgba(167, 139, 250, 0.6);
+            transition: all 0.2s ease;
+        }
+        .clay-button-primary:hover { transform: translateY(-2px); }
+        .clay-nav {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            box-shadow: 10px 10px 30px rgba(163, 140, 195, 0.25), 
+                        inset -5px -5px 10px rgba(163, 140, 195, 0.1), 
+                        inset 5px 5px 10px rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-between p-6 md:p-10">
+
+    <!-- Clay Navigation Bar -->
+    <header class="clay-nav flex items-center justify-between px-10 py-5 max-w-6xl mx-auto w-full sticky top-4 z-50">
+        <a href="index.html" class="flex items-center space-x-3 group cursor-pointer">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center font-bold text-white text-xl shadow-md group-hover:scale-105 transition">Z</div>
+            <span class="text-xl font-bold tracking-wider text-purple-950">ZENITH AI</span>
+        </a>
+        <div class="flex items-center space-x-4">
+            <a href="index.html" class="text-sm font-semibold text-purple-900 px-4 py-2 hover:text-purple-600">Home</a>
+            <a href="login.html" class="text-sm font-semibold clay-button-primary px-5 py-2.5">Sign In</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center my-10">
+        <div class="clay-card max-w-md mx-auto p-8 md:p-10 w-full">
+            
+            <h1 class="text-2xl font-extrabold text-purple-950 mb-2 text-center">Customer Sign Up</h1>
+            <p class="text-xs text-purple-900/70 mb-8 text-center">Create your account to submit support requests</p>
+
+            <form id="signupForm" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-purple-900 mb-1.5">Full Name</label>
+                    <input type="text" id="name" required placeholder="Alex Smith" 
+                           class="clay-input w-full px-5 py-3 text-sm text-purple-950 placeholder-purple-300">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-purple-900 mb-1.5">Email Address</label>
+                    <input type="email" id="email" required placeholder="alex@example.com" 
+                           class="clay-input w-full px-5 py-3 text-sm text-purple-950 placeholder-purple-300">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-purple-900 mb-1.5">Password</label>
+                    <input type="password" id="password" required placeholder="••••••••" 
+                           class="clay-input w-full px-5 py-3 text-sm text-purple-950 placeholder-purple-300">
+                </div>
+
+                <button type="submit" class="w-full py-3.5 clay-button-primary font-bold text-sm">
+                    Create Customer Account
+                </button>
+            </form>
+
+            <p class="text-xs text-center text-purple-900/70 mt-6">
+                Already have an account? <a href="login.html" class="text-purple-600 font-bold hover:underline">Sign In</a>
+            </p>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 text-center text-xs font-semibold text-purple-900/60">
+        &copy; 2026 Zenith AI Systems.
+    </footer>
+
+    <!-- Script -->
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await fetch('http://localhost:8050/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                if (res.ok) {
+                    alert('Registration successful! Please sign in.');
+                    window.location.href = 'login.html';
+                } else {
+                    const errText = await res.text();
+                    alert('Error: ' + errText);
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Connection error with backend.');
+            }
+        });
+    </script>
+</body>
+</html>

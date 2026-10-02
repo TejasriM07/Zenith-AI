@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenith AI | Agent Command Center</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+    .clay-select {
+        background: #ffffff;
+        border-radius: 20px;
+        border: none;
+        box-shadow: inset 6px 6px 12px rgba(163, 140, 195, 0.2), 
+                    inset -6px -6px 12px rgba(255, 255, 255, 0.9);
+        outline: none;
+        color: #2b2d42;
+    }
+    .clay-select option {
+        background: #fdfcff;
+        color: #2b2d42;
+        padding: 12px;
+    }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #f3e7ff 0%, #e5d9f2 50%, #d7c1f9 100%); color: #2b2d42; min-height: 100vh; }
+        .clay-card { background: #ffffff; border-radius: 35px; box-shadow: 20px 20px 50px rgba(163, 140, 195, 0.4), inset -10px -10px 20px rgba(163, 140, 195, 0.15), inset 10px 10px 20px rgba(255, 255, 255, 0.9); }
+        .clay-button-primary { background: #7c3aed; color: #ffffff; border-radius: 20px; box-shadow: 10px 10px 25px rgba(124, 58, 237, 0.4), inset -5px -5px 10px rgba(91, 33, 182, 0.5), inset 5px 5px 10px rgba(167, 139, 250, 0.6); transition: all 0.2s ease; }
+        .clay-button-primary:hover { transform: translateY(-2px); }
+        .clay-button-secondary { background: #f3e8ff; color: #6b21a8; border-radius: 20px; box-shadow: 6px 6px 15px rgba(163, 140, 195, 0.2); transition: all 0.2s ease; }
+        .clay-button-secondary:hover { transform: translateY(-2px); }
+        .clay-nav { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 25px; }
+        .clay-widget { background: #fdfcff; border-radius: 25px; box-shadow: inset 8px 8px 16px rgba(163, 140, 195, 0.15), inset -8px -8px 16px rgba(255, 255, 255, 0.9); }
+    </style>
+</head>
+<body class="flex flex-col justify-between p-6 md:p-10">
+
+    <header class="clay-nav flex items-center justify-between px-10 py-5 max-w-7xl mx-auto w-full sticky top-4 z-50">
+        <a href="index.html" class="flex items-center space-x-3 group cursor-pointer">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center font-bold text-white text-xl shadow-md">Z</div>
+            <span class="text-xl font-bold tracking-wider text-purple-950">ZENITH AI <span id="portalBadge" class="text-xs bg-purple-200 text-purple-800 px-3 py-1 rounded-full ml-2 font-semibold">Agent Portal</span></span>
+        </a>
+        <div class="flex items-center space-x-3">
+            <div id="managerNavContainer"></div>
+            <a href="register-agent.html" class="text-xs font-bold clay-button-secondary px-5 py-3 flex items-center space-x-2">
+                <span>Add Agent</span>
+            </a>
+            <span id="agentNameDisplay" class="text-sm font-semibold text-purple-900 hidden md:inline px-2"></span>
+            <button onclick="logout()" class="text-xs font-bold text-red-600 bg-white px-4 py-3 rounded-2xl shadow-sm">Sign Out</button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto w-full my-10 space-y-8">
+        <div class="clay-card p-8 md:p-10">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-purple-950">Support Command Center</h1>
+                    <p class="text-sm text-purple-900/70">Autonomous AI triage, sentiment analysis, and department routing stream.</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                   <select id="prioritySort" onchange="filterAndRenderTable()" class="text-xs font-bold px-5 py-3 clay-select">
+    <option value="ALL">Sort By Priority (All)</option>
+    <option value="URGENT">Urgent First</option>
+    <option value="HIGH">High First</option>
+    <option value="MEDIUM">Medium First</option>
+    <option value="LOW">Low First</option>
+	</select>
+                    <button onclick="loadDashboardData()" class="px-5 py-3 clay-button-primary text-xs font-bold">Refresh</button>
+                </div>
+            </div>
+
+            <!-- Analytics Widgets -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <div class="clay-widget p-6 flex flex-col items-center justify-center">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-purple-900 mb-2 self-start"> Category</h3>
+                    <div id="pie3d_chart" class="w-full h-56 flex items-center justify-center"></div>
+                </div>
+                <div class="clay-widget p-6 flex flex-col items-center justify-center">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-purple-900 mb-2 self-start">Tickets per Client</h3>
+                    <div id="client_chart" class="w-full h-56 flex items-center justify-center"></div>
+                </div>
+            </div>
+
+            <!-- Real-Time Ticket Stream Table -->
+            <div>
+                <h3 class="text-sm font-bold uppercase tracking-wider text-purple-900 mb-4">Real-Time Ticket Stream & Actions</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-purple-200/60 text-xs font-bold uppercase tracking-wider text-purple-900">
+                                <th class="p-4">ID</th>
+                                <th class="p-4">Customer Email</th>
+                                <th class="p-4">Category</th>
+                                <th class="p-4">Priority</th>
+                                <th class="p-4">Department</th>
+                                <th class="p-4">Sentiment</th>
+                                <th class="p-4">Status & Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketTableBody" class="text-sm text-purple-950 divide-y divide-purple-100">
+                            <tr><td colspan="7" class="p-6 text-center text-purple-400">Loading tickets...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-4 text-center text-xs font-semibold text-purple-900/60">
+        &copy; 2026 Zenith AI Systems. Support Agent Command Center.
+    </footer>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (!currentUser || (currentUser.role !== 'ROLE_AGENT' && currentUser.role !== 'ROLE_MANAGER')) {
+            alert('Unauthorized access'); window.location.href = 'login.html';
+        } else {
+            document.getElementById('agentNameDisplay').textContent = `${currentUser.role === 'ROLE_MANAGER' ? 'Manager' : 'Agent'}: ${currentUser.name}`;
+            if (currentUser.role === 'ROLE_MANAGER') {
+                document.getElementById('portalBadge').textContent = 'Manager Portal';
+                document.getElementById('managerNavContainer').innerHTML = `
+                    <a href="manager-performance.html" class="text-xs font-bold clay-button-secondary px-4 py-3">Performance</a>
+                    <a href="manager-portal.html" class="text-xs font-bold clay-button-secondary px-4 py-3">Oversight</a>
+                `;
+            }
+        }
+
+        function logout() { localStorage.removeItem('currentUser'); window.location.href = 'login.html'; }
+
+        google.charts.load("current", {packages:["corechart"]});
+
+        let cachedTickets = [];
+
+        async function loadDashboardData() {
+            try {
+                const res = await fetch('http://localhost:8050/api/tickets');
+                cachedTickets = await res.json();
+                filterAndRenderTable();
+                google.charts.setOnLoadCallback(() => {
+                    draw3dPieChart(cachedTickets);
+                    drawClientChart(cachedTickets);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        function filterAndRenderTable() {
+            const sortVal = document.getElementById('prioritySort').value;
+            let tickets = [...cachedTickets];
+
+            // 1. Resolved tickets go to the bottom automatically
+            tickets.sort((a, b) => {
+                const aRes = a.status === 'RESOLVED' ? 1 : 0;
+                const bRes = b.status === 'RESOLVED' ? 1 : 0;
+                if (aRes !== bRes) return aRes - bRes;
+
+                // 2. Sort by priority if selected
+                const priorityWeight = { 'URGENT': 4, 'HIGH': 3, 'MEDIUM': 2, 'LOW': 1, 'NORMAL': 1 };
+                if (sortVal !== 'ALL') {
+                    if (a.priority === sortVal && b.priority !== sortVal) return -1;
+                    if (b.priority === sortVal && a.priority !== sortVal) return 1;
+                }
+                return (priorityWeight[b.priority] || 1) - (priorityWeight[a.priority] || 1);
+            });
+
+            const tbody = document.getElementById('ticketTableBody');
+            if (tickets.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-purple-400">No support tickets found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            tickets.forEach(ticket => {
+                let priorityClass = 'bg-slate-200 text-slate-800';
+                if (ticket.priority === 'URGENT' || ticket.priority === 'HIGH') priorityClass = 'bg-red-100 text-red-700';
+                else if (ticket.priority === 'MEDIUM') priorityClass = 'bg-amber-100 text-amber-700';
+                else priorityClass = 'bg-green-100 text-green-700';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-white/40 transition ${ticket.status === 'RESOLVED' ? 'opacity-60 bg-slate-50' : ''}">
+                        <td class="p-4 font-bold">#${ticket.id}</td>
+                        <td class="p-4 font-medium text-purple-900">
+                            ${ticket.customerEmail}<br>
+                            <a href="mailto:${ticket.customerEmail}?subject=Regarding Ticket #${ticket.id}&body=Hello,%0D%0A%0D%0ARegarding your complaint: '${ticket.rawMessage}'..." 
+                               class="text-xs font-bold text-indigo-600 hover:underline mt-1 inline-flex items-center space-x-1">
+                               <span>✉ Contact User</span>
+                            </a>
+                        </td>
+                        <td class="p-4"><span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-800">${ticket.category || 'GENERAL'}</span></td>
+                        <td class="p-4"><span class="px-3 py-1 rounded-full text-xs font-bold ${priorityClass}">${ticket.priority || 'NORMAL'}</span></td>
+                        <td class="p-4 font-semibold text-indigo-900">${ticket.assignedDepartment || 'General Support'}</td>
+                        <td class="p-4 text-xs font-bold">${ticket.sentiment || 'NEUTRAL'}</td>
+                        <td class="p-4">
+                            <select onchange="updateTicketStatus(${ticket.id}, this.value)" class="text-xs font-bold px-3 py-2 rounded-xl border border-purple-200 bg-white shadow-sm">
+                                <option value="PENDING" ${ticket.status === 'PENDING' || !ticket.status ? 'selected' : ''}>Mark Pending</option>
+                                <option value="RESOLVED" ${ticket.status === 'RESOLVED' ? 'selected' : ''}>Mark Resolved</option>
+                            </select>
+                            ${ticket.resolvedBy ? `<div class="text-[10px] text-purple-500 mt-1">Resolved by: ${ticket.resolvedBy}</div>` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        async function updateTicketStatus(id, status) {
+            try {
+                await fetch(`http://localhost:8050/api/tickets/${id}/status?status=${status}&agentName=${encodeURIComponent(currentUser.name)}`, { method: 'POST' });
+                loadDashboardData();
+            } catch (err) { console.error(err); }
+        }
+
+        function draw3dPieChart(tickets) {
+            const counts = { BILLING: 0, TECHNICAL: 0, SHIPPING: 0, GENERAL: 0 };
+            tickets.forEach(t => { const cat = (t.category || 'GENERAL').toUpperCase(); counts[cat] = (counts[cat] || 0) + 1; });
+            const data = google.visualization.arrayToDataTable([['Category', 'Count'], ['Billing', counts.BILLING], ['Technical', counts.TECHNICAL], ['Shipping', counts.SHIPPING], ['General', counts.GENERAL]]);
+            const chart = new google.visualization.PieChart(document.getElementById('pie3d_chart'));
+            chart.draw(data, { is3D: true, backgroundColor: 'transparent', colors: ['#7c3aed', '#06b6d4', '#10b981', '#f59e0b'], legend: { position: 'bottom', textStyle: { fontSize: 11 } } });
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Fetch tickets and users simultaneously
+                const [ticketsRes, usersRes] = await Promise.all([
+                    fetch('http://localhost:8050/api/tickets'),
+                    fetch('http://localhost:8050/api/auth/users')
+                ]);
+                
+                cachedTickets = await ticketsRes.json();
+                const users = await usersRes.json();
+                
+                filterAndRenderTable();
+                
+                google.charts.setOnLoadCallback(() => {
+                    draw3dPieChart(cachedTickets);
+                    drawEmployeeResolutionChart(cachedTickets, users);
+                });
+            } catch (err) { console.error(err); }
+        }
+
+        function drawEmployeeResolutionChart(tickets, users) {
+            // Filter only staff (Agents & Managers)
+            const staff = users.filter(u => u.role === 'ROLE_AGENT' || u.role === 'ROLE_MANAGER');
+            
+            const resolutionCounts = {};
+            staff.forEach(emp => {
+                resolutionCounts[emp.name] = 0;
+            });
+
+            // Count how many tickets each employee resolved
+            tickets.forEach(t => {
+                if (t.status === 'RESOLVED' && t.resolvedBy) {
+                    resolutionCounts[t.resolvedBy] = (resolutionCounts[t.resolvedBy] || 0) + 1;
+                }
+            });
+
+            const dataArray = [['Employee', 'Resolved Tickets']];
+            for (const [name, count] of Object.entries(resolutionCounts)) {
+                dataArray.push([name, count]);
+            }
+
+            const data = google.visualization.arrayToDataTable(dataArray);
+            
+            const chart = new google.visualization.ColumnChart(document.getElementById('client_chart'));
+            chart.draw(data, { 
+                is3D: true, 
+                backgroundColor: 'transparent', 
+                colors: ['#7c3aed'], 
+                legend: { position: 'none' }, 
+                hAxis: { textStyle: { fontSize: 11, bold: true } },
+                vAxis: { format: 'decimal' }
+            });
+            
+            // Update the chart title widget header to match what it's displaying
+            document.querySelectorAll('.clay-widget h3')[1].textContent = "Tickets Resolved by Employee";
+        }
+
+        loadDashboardData();
+    </script>
+</body>
+</html>
