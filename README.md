@@ -7,7 +7,6 @@ Zenith AI is an enterprise-grade, AI-driven support ticketing platform engineere
 ## 📸 Website Preview
 > *Below is a preview of the Zenith AI Support Command Center and Manager Analytics Portal:*
 ![Zenith AI Dashboard Preview](src/main/resources/static/images/dashboard-preview.png)
-*(Note: Ensure your screenshot is placed in `src/main/resources/static/images/` or link your deployed image URL here).*
 
 ---
 
@@ -53,7 +52,9 @@ zenith-ai/
     │           ├── manager-portal.html        # Manager Oversight & Approvals
     │           └── manager-performance.html   # Employee Resolution Metrics & Detail View
 
-    ## 🧗 Development Hurdles & Solutions
+   
+```
+ ## 🧗 Development Hurdles & Solutions
 During the development of Zenith AI, several engineering challenges were successfully resolved:
 
 * **Hurdle 1: Native HTML Dropdown Styling Limitations**
@@ -82,8 +83,6 @@ During the development of Zenith AI, several engineering challenges were success
 ```bash
 git clone [https://github.com/your-username/zenith-ai-support.git](https://github.com/your-username/zenith-ai-support.git)
 cd zenith-ai
-```
-
 ### Step 2: Configure the Database & Environment
 
 Create a MySQL database named `zenith_ai`:
